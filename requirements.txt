@@ -1,0 +1,4 @@
+# The Hunter — runtime dependencies
+# hunter_lib is stdlib-first; only add what's truly required.
+
+pyyaml>=6.0  # scope.yaml parsing

@@ -1,0 +1,25 @@
+{
+  "name": "hunter",
+  "version": "0.1.0",
+  "description": "The Hunter — unified OSINT cybersecurity super-agent. Synthesizes the best capabilities from 50+ OSINT/pentest repos into one scope-driven workflow with chain-of-custody evidence, identity correlation, infrastructure attribution, crypto tracing, and continuous monitoring. Built for legitimate scam-attribution and authorized investigations.",
+  "author": {
+    "name": "drtamar"
+  },
+  "homepage": "https://github.com/drtamar/AI-OSINT-Framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drtamar/AI-OSINT-Framework.git"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "osint",
+    "cybersecurity",
+    "investigation",
+    "scam-attribution",
+    "threat-intel",
+    "chain-of-custody",
+    "crypto-tracing",
+    "claude-code",
+    "claude-plugin"
+  ]
+}
