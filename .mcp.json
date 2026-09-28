@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "world-intel": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "../world-intel-mcp", "python", "-m", "world_intel_mcp"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    "shodan": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "../shodan-mcp", "python", "-m", "shodan_mcp"],
+      "env": {
+        "SHODAN_API_KEY": "${SHODAN_API_KEY}"
+      }
+    },
+    "pentest-osint": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["../pentest-osint-mcp-server/src/server.py"],
+      "env": {
+        "VIRUSTOTAL_API_KEY": "${VIRUSTOTAL_API_KEY}",
+        "HUNTERIO_API_KEY": "${HUNTERIO_API_KEY}",
+        "HIBP_API_KEY": "${HIBP_API_KEY}",
+        "GREYNOISE_API_KEY": "${GREYNOISE_API_KEY}",
+        "INTELX_API_KEY": "${INTELX_API_KEY}"
+      }
+    }
+  }
+}
