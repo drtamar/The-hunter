@@ -49,8 +49,7 @@ format:
 # Security
 security:
 	bandit -r core/ modules/ ai_tools/ legal/ -f screen
-	safety check
-	pip-audit
+	pip-audit -r requirements.txt
 
 # Documentation
 docs:
