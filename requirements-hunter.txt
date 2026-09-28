@@ -1,0 +1,4 @@
+# Hunter framework runtime dependencies (additive to parent requirements.txt).
+# Keep this list minimal — hunter_lib is stdlib-first by design.
+
+pyyaml>=6.0  # scope.yaml parsing

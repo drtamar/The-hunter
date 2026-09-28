@@ -1,0 +1,105 @@
+# Hunter Scope File — Template
+#
+# Copy to scope/scope.yaml and fill in. The Hunter refuses active OSINT without a scope.
+# This file is read by hooks/opsec-gate.sh on every tool call.
+
+case_id: "CASE-2026-0001"
+case_title: ""
+opened_at: ""           # ISO 8601, e.g. 2026-05-01T14:30:00Z
+investigator: ""        # your handle/name (will be redacted from outputs per victim_pii)
+
+# Why this investigation is authorized.
+# Examples:
+#   "Victim of fraud — investigating the scammer who took crypto payment for non-delivered goods"
+#   "Authorized pentest engagement #ACME-2026-Q2 (signed SOW on file)"
+#   "CTF competition: HackTheBox season 9, machine: <name>"
+#   "Journalism source-protection: identifying the actor behind a phishing attack on staff"
+authorization: |
+  
+
+# ─── TARGETS ───────────────────────────────────────────────────────────────
+# What the Hunter is allowed to investigate. Anything not listed here is
+# implicitly out-of-scope.
+targets:
+  domains: []
+    # - "scammer-domain.com"
+    # - "fake-shop.io"
+  ips: []
+    # - "192.0.2.55"
+  handles: []
+    # - { platform: telegram, id: "@scammer" }
+    # - { platform: x,        id: "fakeguy42" }
+    # - { platform: discord,  id: "scammer#1234" }
+  emails: []
+    # - "contact@scammer-domain.com"
+  phones: []
+    # - "+1-555-0100"
+  wallets: []
+    # - { chain: ETH, address: "0xabc..." }
+    # - { chain: BTC, address: "bc1q..." }
+    # - { chain: TRX, address: "T..." }
+  payment_refs: []
+    # - { type: "wire", reference: "REF-2026-...", bank: "" }
+    # - { type: "paypal", reference: "..." }
+  images: []
+    # - { sha256: "...", note: "profile photo from fake LinkedIn" }
+
+# ─── OUT-OF-SCOPE (HARD STOPS) ─────────────────────────────────────────────
+out_of_scope:
+  domains: []     # bystander domains the scammer references but we don't investigate
+  individuals: [] # innocent third parties, ex-employees, etc.
+  countries: []   # regions where collection raises legal issues
+
+# ─── INVESTIGATOR-PII REDACTION ────────────────────────────────────────────
+# These values are scrubbed from every output, log, and report before it's
+# saved or shared. Protect yourself first.
+victim_pii:
+  names: []
+  emails: []
+  phones: []
+  addresses: []
+  bank_accounts: []
+  wallets: []
+  ip_addresses: []  # your home/office IPs — never leak in artifacts
+  case_id_aliases: []  # any external case numbers tying to you
+
+# ─── OPSEC ─────────────────────────────────────────────────────────────────
+opsec:
+  user_agent_rotation: true
+  block_referer_leak: true
+  proxy: ""                       # optional: socks5://host:port
+  allow_active_scanning: false    # nmap / dirbuster / nuclei / sqlmap
+  allow_credential_checks: false  # h8mail / holehe / breach-database queries
+  allow_paid_apis: true           # let tools spend on Shodan/VT/IntelX
+  max_pivot_depth: 3              # how many hops the orchestrator may chain
+  max_runtime_minutes: 60         # per /hunt invocation
+
+# ─── EVIDENCE ──────────────────────────────────────────────────────────────
+evidence:
+  archive_all_web_fetches: true
+  hash_algorithm: "sha256"
+  archive_targets: ["wayback", "archive.today"]
+  ev_id_prefix: "EV"              # produces EV-0001, EV-0002, ...
+  retain_raw_html: true
+  retain_screenshots: true
+  warc_capture: false             # set true if `wget --warc` available
+
+# ─── REPORTING ─────────────────────────────────────────────────────────────
+reporting:
+  format: ["markdown", "pdf"]
+  source_grading: true             # A–F reliability grades on every claim
+  hypothesis_tracker: true         # Confirmed / Indeterminate / Refuted
+  redact_investigator: true
+  include_legal_handover_section: true
+
+# ─── NOTIFICATIONS ─────────────────────────────────────────────────────────
+notifications:
+  channels: []
+    # - { kind: telegram, env: TELEGRAM_BOT_TOKEN, chat_id_env: TELEGRAM_CHAT_ID }
+    # - { kind: discord,  env: DISCORD_WEBHOOK_URL }
+    # - { kind: slack,    env: SLACK_WEBHOOK_URL }
+  alert_on:
+    - new_finding
+    - hypothesis_confirmed
+    - watchlist_hit
+    - scope_violation_attempted
