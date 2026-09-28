@@ -92,4 +92,4 @@ The Hunter is designed for: scam victims pursuing attribution, authorized pentes
 
 ## License
 
-Apache-2.0 (matches parent `AI-OSINT-Framework`).
+MIT — see [LICENSE](LICENSE) (matches parent `AI-OSINT-Framework`).

@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/drtamar/AI-OSINT-Framework.git"
   },
-  "license": "Apache-2.0",
+  "license": "MIT",
   "keywords": [
     "osint",
     "cybersecurity",
