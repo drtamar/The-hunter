@@ -5,10 +5,10 @@ Ensures compliance with EU General Data Protection Regulation (GDPR)
 for OSINT data collection and processing.
 """
 
-from typing import Dict, List, Optional, Any
-from enum import Enum
-import re
 import logging
+import re
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -62,18 +62,14 @@ class GDPRCompliance:
         Returns:
             Validation result with compliance status
         """
-        is_valid = self._validate_legal_basis(
-            data_type, purpose, legal_basis
-        )
+        is_valid = self._validate_legal_basis(data_type, purpose, legal_basis)
 
         return {
             "compliant": is_valid,
             "data_type": data_type,
             "purpose": purpose,
             "legal_basis": legal_basis.value,
-            "recommendation": self._get_recommendation(
-                is_valid, legal_basis
-            ),
+            "recommendation": self._get_recommendation(is_valid, legal_basis),
         }
 
     def _validate_legal_basis(
@@ -88,16 +84,12 @@ class GDPRCompliance:
 
         # Consent rarely appropriate for OSINT (can't get it)
         if legal_basis == LegalBasis.CONSENT:
-            logger.warning(
-                "Consent not appropriate for OSINT investigations"
-            )
+            logger.warning("Consent not appropriate for OSINT investigations")
             return False
 
         return legal_basis in valid_bases
 
-    def _get_recommendation(
-        self, is_valid: bool, legal_basis: LegalBasis
-    ) -> str:
+    def _get_recommendation(self, is_valid: bool, legal_basis: LegalBasis) -> str:
         """Get compliance recommendation."""
         if not is_valid:
             return (
@@ -126,9 +118,11 @@ class GDPRCompliance:
             "collected_fields": len(collected_fields),
             "required_fields": len(required_fields),
             "excessive_fields": list(excessive_fields),
-            "recommendation": "Remove excessive fields to comply with data minimization"
-            if excessive_fields
-            else "Data collection is minimized",
+            "recommendation": (
+                "Remove excessive fields to comply with data minimization"
+                if excessive_fields
+                else "Data collection is minimized"
+            ),
         }
 
     def check_sensitive_data(self, text: str) -> Dict[str, Any]:
@@ -151,9 +145,11 @@ class GDPRCompliance:
             "has_sensitive_data": len(detected) > 0,
             "detected_types": list(detected.keys()),
             "counts": detected,
-            "recommendation": "Anonymize or delete sensitive data"
-            if detected
-            else "No sensitive data detected",
+            "recommendation": (
+                "Anonymize or delete sensitive data"
+                if detected
+                else "No sensitive data detected"
+            ),
         }
 
     def anonymize_text(self, text: str) -> str:
@@ -176,9 +172,7 @@ class GDPRCompliance:
         }
 
         for data_type, pattern in self.sensitive_patterns.items():
-            anonymized = re.sub(
-                pattern, replacements[data_type], anonymized
-            )
+            anonymized = re.sub(pattern, replacements[data_type], anonymized)
 
         return anonymized
 
@@ -200,12 +194,12 @@ class GDPRCompliance:
             "compliant": is_compliant,
             "data_age_days": data_age_days,
             "max_retention_days": max_retention_days,
-            "days_remaining": max_retention_days - data_age_days
-            if is_compliant
-            else 0,
-            "recommendation": "Data should be deleted"
-            if not is_compliant
-            else f"Data can be retained for {max_retention_days - data_age_days} more days",
+            "days_remaining": max_retention_days - data_age_days if is_compliant else 0,
+            "recommendation": (
+                "Data should be deleted"
+                if not is_compliant
+                else f"Data can be retained for {max_retention_days - data_age_days} more days"
+            ),
         }
 
 

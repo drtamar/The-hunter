@@ -5,10 +5,10 @@ This module provides validators for ensuring legal compliance,
 input sanitization, and data source verification.
 """
 
+import logging
 import re
 from typing import List, Optional
 from urllib.parse import urlparse
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -123,8 +123,7 @@ class InputValidator:
     def __init__(self):
         """Initialize the input validator."""
         self.domain_pattern = re.compile(
-            r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+"
-            r"[a-zA-Z]{2,}$"
+            r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+" r"[a-zA-Z]{2,}$"
         )
         self.ip_pattern = re.compile(
             r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"

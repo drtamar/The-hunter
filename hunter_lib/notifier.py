@@ -3,31 +3,41 @@
 Pattern from drtamar/claudeos. All channels read their secrets from env vars
 so nothing sensitive lands in scope.yaml.
 """
+
 from __future__ import annotations
-import os
+
 import json
-import urllib.request
+import os
 import urllib.parse
+import urllib.request
 
 
 def _post(url: str, data: dict, headers: dict | None = None) -> str:
     h = {"Content-Type": "application/json", "User-Agent": "hunter-notifier/0.1"}
     if headers:
         h.update(headers)
-    req = urllib.request.Request(url, data=json.dumps(data).encode(), headers=h, method="POST")
+    req = urllib.request.Request(
+        url, data=json.dumps(data).encode(), headers=h, method="POST"
+    )
     try:
         return urllib.request.urlopen(req, timeout=10).read().decode(errors="replace")
     except Exception as e:
         return f"error: {e}"
 
 
-def telegram(text: str, token_env: str = "TELEGRAM_BOT_TOKEN", chat_env: str = "TELEGRAM_CHAT_ID") -> str:
+def telegram(
+    text: str, token_env: str = "TELEGRAM_BOT_TOKEN", chat_env: str = "TELEGRAM_CHAT_ID"
+) -> str:
     tok = os.environ.get(token_env, "")
     chat = os.environ.get(chat_env, "")
     if not tok or not chat:
         return "skipped: missing env"
-    body = urllib.parse.urlencode({"chat_id": chat, "text": text, "parse_mode": "Markdown"}).encode()
-    req = urllib.request.Request(f"https://api.telegram.org/bot{tok}/sendMessage", data=body)
+    body = urllib.parse.urlencode(
+        {"chat_id": chat, "text": text, "parse_mode": "Markdown"}
+    ).encode()
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{tok}/sendMessage", data=body
+    )
     try:
         return urllib.request.urlopen(req, timeout=10).read().decode(errors="replace")
     except Exception as e:

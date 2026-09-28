@@ -5,15 +5,15 @@ Integrates Anthropic's Claude API for OSINT analysis and synthesis.
 Optimized for intelligence analysis, report generation, and pattern detection.
 """
 
-from typing import Dict, Any, List, Optional
+import json
 import logging
 from datetime import datetime
-import json
+from typing import Any, Dict, List, Optional
 
 try:
     import anthropic
 except ImportError:
-    anthropic = None
+    anthropic = None  # type: ignore[assignment]
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +40,8 @@ class ClaudeAnalyzer:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "claude-3-5-sonnet-20241022",
+        model: str = "claude-sonnet-5",
         max_tokens: int = 4096,
-        temperature: float = 0.7,
     ):
         """Initialize Claude analyzer.
 
@@ -50,7 +49,6 @@ class ClaudeAnalyzer:
             api_key: Anthropic API key (or set ANTHROPIC_API_KEY env var)
             model: Claude model to use
             max_tokens: Maximum tokens in response
-            temperature: Sampling temperature (0.0-1.0)
 
         Raises:
             ImportError: If anthropic package not installed
@@ -71,7 +69,6 @@ class ClaudeAnalyzer:
         self.client = anthropic.Anthropic(api_key=api_key)
         self.model = model
         self.max_tokens = max_tokens
-        self.temperature = temperature
 
         logger.info(f"Initialized Claude analyzer with model {model}")
 
@@ -123,13 +120,14 @@ Please provide your analysis following these guidelines:
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
-                temperature=self.temperature,
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_message}],
             )
 
             # Extract analysis
-            analysis = response.content[0].text
+            analysis = "".join(
+                block.text for block in response.content if block.type == "text"
+            )
 
             return {
                 "analysis": analysis,
@@ -150,9 +148,7 @@ Please provide your analysis following these guidelines:
                 "success": False,
             }
 
-    def generate_executive_summary(
-        self, findings: List[Dict[str, Any]]
-    ) -> str:
+    def generate_executive_summary(self, findings: List[Dict[str, Any]]) -> str:
         """Generate executive summary from OSINT findings.
 
         Args:
@@ -172,9 +168,7 @@ Based on the OSINT findings provided, generate an executive summary with:
 Format as markdown bullets.
 """
 
-        result = self.analyze_osint_data(
-            data={"findings": findings}, prompt=prompt
-        )
+        result = self.analyze_osint_data(data={"findings": findings}, prompt=prompt)
 
         return result.get("analysis", "")
 
@@ -219,9 +213,7 @@ For each category, provide:
 Use the OSINT intelligence provided to support your assessment.
 """
 
-        result = self.analyze_osint_data(
-            data=intelligence, prompt=prompt
-        )
+        result = self.analyze_osint_data(data=intelligence, prompt=prompt)
 
         return {
             "target": target,
@@ -265,9 +257,7 @@ Return results in structured format.
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    def identify_patterns(
-        self, data_points: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+    def identify_patterns(self, data_points: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Identify patterns and connections in OSINT data.
 
         Args:
@@ -319,9 +309,7 @@ Provide visual description of relationships and suggest visualization approach.
             "risk": "Generate a risk-focused assessment report",
         }
 
-        base_prompt = prompts.get(
-            report_type, prompts["detailed"]
-        )
+        base_prompt = prompts.get(report_type, prompts["detailed"])
 
         prompt = f"""
 {base_prompt}
@@ -341,9 +329,7 @@ Distinguish facts from inferences.
 Include confidence levels.
 """
 
-        result = self.analyze_osint_data(
-            data=intelligence, prompt=prompt
-        )
+        result = self.analyze_osint_data(data=intelligence, prompt=prompt)
 
         return result.get("analysis", "")
 
@@ -385,7 +371,7 @@ def analyze_with_claude(
     data: Dict[str, Any],
     prompt: str,
     api_key: str,
-    model: str = "claude-3-5-sonnet-20241022",
+    model: str = "claude-sonnet-5",
 ) -> Dict[str, Any]:
     """Quick OSINT analysis with Claude.
 

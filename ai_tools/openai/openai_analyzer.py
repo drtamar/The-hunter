@@ -5,15 +5,15 @@ Integrates OpenAI's GPT models for OSINT analysis and data extraction.
 Optimized for structured data extraction and entity recognition.
 """
 
-from typing import Dict, Any, List, Optional
+import json
 import logging
 from datetime import datetime
-import json
+from typing import Any, Dict, List, Optional
 
 try:
     from openai import OpenAI
 except ImportError:
-    OpenAI = None
+    OpenAI = None  # type: ignore[misc,assignment]
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +55,7 @@ class OpenAIAnalyzer:
         """
         if OpenAI is None:
             raise ImportError(
-                "openai package not installed. "
-                "Install with: pip install openai"
+                "openai package not installed. " "Install with: pip install openai"
             )
 
         if not api_key:
@@ -113,15 +112,16 @@ OSINT Data:
             )
 
             analysis = response.choices[0].message.content
+            usage = response.usage
 
             return {
                 "analysis": analysis,
                 "model": self.model,
                 "timestamp": datetime.utcnow().isoformat(),
                 "usage": {
-                    "prompt_tokens": response.usage.prompt_tokens,
-                    "completion_tokens": response.usage.completion_tokens,
-                    "total_tokens": response.usage.total_tokens,
+                    "prompt_tokens": usage.prompt_tokens if usage else None,
+                    "completion_tokens": usage.completion_tokens if usage else None,
+                    "total_tokens": usage.total_tokens if usage else None,
                 },
                 "success": True,
             }
@@ -201,15 +201,11 @@ Focus on:
 Use professional intelligence summary format.
 """
 
-        result = self.analyze_osint_data(
-            data=intelligence, prompt=prompt
-        )
+        result = self.analyze_osint_data(data=intelligence, prompt=prompt)
 
         return result.get("analysis", "")
 
-    def translate_text(
-        self, text: str, target_language: str = "English"
-    ) -> str:
+    def translate_text(self, text: str, target_language: str = "English") -> str:
         """Translate text for multilingual OSINT.
 
         Args:

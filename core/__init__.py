@@ -10,8 +10,8 @@ __author__ = "Bartosz Gaca"
 __email__ = "gaca.bartosz@gmail.com"
 
 from .engine import OSINTEngine
-from .validators import SourceValidator, InputValidator
 from .utils import Logger, RateLimiter
+from .validators import InputValidator, SourceValidator
 
 __all__ = [
     "OSINTEngine",

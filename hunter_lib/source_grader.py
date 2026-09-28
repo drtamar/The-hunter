@@ -7,6 +7,7 @@ D = Not usually reliable
 E = Unreliable
 F = Cannot be judged
 """
+
 from __future__ import annotations
 
 GRADES = {
@@ -21,13 +22,27 @@ GRADES = {
 _RANK = {g: i for i, g in enumerate("ABCDEF")}
 
 _KIND_GRADES = {
-    "rdap": "A", "whois": "A", "crt.sh": "A", "shodan": "A",
-    "etherscan": "A", "blockchair": "A", "blockchain-explorer": "A",
-    "wayback": "B", "archive.today": "B",
-    "virustotal": "A", "urlhaus": "A", "otx": "A", "threatfox": "A",
-    "phishtank": "A", "cisa-kev": "A", "ofac": "A", "greynoise": "A",
+    "rdap": "A",
+    "whois": "A",
+    "crt.sh": "A",
+    "shodan": "A",
+    "etherscan": "A",
+    "blockchair": "A",
+    "blockchain-explorer": "A",
+    "wayback": "B",
+    "archive.today": "B",
+    "virustotal": "A",
+    "urlhaus": "A",
+    "otx": "A",
+    "threatfox": "A",
+    "phishtank": "A",
+    "cisa-kev": "A",
+    "ofac": "A",
+    "greynoise": "A",
     "walletexplorer": "B",
-    "chainabuse": "C", "abuseipdb": "C", "etherscamdb": "C",
+    "chainabuse": "C",
+    "abuseipdb": "C",
+    "etherscamdb": "C",
     "third-party-mirror": "C",
     "user-screenshot": "B",
     "community-report": "C",

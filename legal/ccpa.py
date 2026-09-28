@@ -5,9 +5,9 @@ Ensures compliance with California Consumer Privacy Act (CCPA)
 for OSINT data collection and processing.
 """
 
-from typing import Dict, Any, List
 import logging
 from datetime import datetime
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +59,14 @@ class CCPACompliance:
         ]
 
         return {
-            "compliant": notice_provided
-            and len(categories_disclosed) > 0,
+            "compliant": notice_provided and len(categories_disclosed) > 0,
             "notice_provided": notice_provided,
             "categories_disclosed": categories_disclosed,
-            "recommendation": "Provide collection notice"
-            if not notice_provided
-            else "Notice appears compliant",
+            "recommendation": (
+                "Provide collection notice"
+                if not notice_provided
+                else "Notice appears compliant"
+            ),
         }
 
     def check_deletion_request(
@@ -85,14 +86,10 @@ class CCPACompliance:
         return {
             "compliant": should_delete or exemptions_apply,
             "action": "delete_data" if should_delete else "retain_data",
-            "reason": self._get_deletion_reason(
-                request_verified, exemptions_apply
-            ),
+            "reason": self._get_deletion_reason(request_verified, exemptions_apply),
         }
 
-    def _get_deletion_reason(
-        self, verified: bool, exemptions: bool
-    ) -> str:
+    def _get_deletion_reason(self, verified: bool, exemptions: bool) -> str:
         """Get reason for deletion action."""
         if not verified:
             return "Request not verified"
@@ -122,9 +119,11 @@ class CCPACompliance:
             "compliant": opt_out_link_provided,
             "sale_of_data": sale_of_data,
             "opt_out_link_provided": opt_out_link_provided,
-            "recommendation": "Provide 'Do Not Sell My Personal Information' link"
-            if not opt_out_link_provided
-            else "Opt-out link provided",
+            "recommendation": (
+                "Provide 'Do Not Sell My Personal Information' link"
+                if not opt_out_link_provided
+                else "Opt-out link provided"
+            ),
         }
 
     def check_data_security(
@@ -145,9 +144,11 @@ class CCPACompliance:
             "compliant": is_compliant,
             "encryption_enabled": encryption_enabled,
             "access_controls": access_controls,
-            "recommendation": "Implement encryption and access controls"
-            if not is_compliant
-            else "Security measures appear adequate",
+            "recommendation": (
+                "Implement encryption and access controls"
+                if not is_compliant
+                else "Security measures appear adequate"
+            ),
         }
 
 
@@ -169,11 +170,7 @@ def is_ccpa_compliant(
     """
     ccpa = CCPACompliance()
 
-    notice_check = ccpa.check_collection_notice(
-        collection_notice, ["Identifiers"]
-    )
-    opt_out_check = ccpa.check_opt_out_compliance(
-        data_sale, opt_out_provided
-    )
+    notice_check = ccpa.check_collection_notice(collection_notice, ["Identifiers"])
+    opt_out_check = ccpa.check_opt_out_compliance(data_sale, opt_out_provided)
 
     return notice_check["compliant"] and opt_out_check["compliant"]

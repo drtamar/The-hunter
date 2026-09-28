@@ -3,10 +3,12 @@
 Rotates User-Agent, suppresses Referer leak, respects scope.opsec.proxy.
 Called from skills/opsec-firewall and by Python-side subagent tooling.
 """
+
 from __future__ import annotations
+
+import pathlib
 import random
 import urllib.request
-import pathlib
 
 try:
     import yaml
@@ -36,7 +38,12 @@ def pick_ua(stable: bool = False) -> str:
     return UA_POOL[0] if stable else random.choice(UA_POOL)
 
 
-def http_get(url: str, scope_path: str = "scope/scope.yaml", stable: bool = False, timeout: int = 20) -> tuple[int, bytes, dict]:
+def http_get(
+    url: str,
+    scope_path: str = "scope/scope.yaml",
+    stable: bool = False,
+    timeout: int = 20,
+) -> tuple[int, bytes, dict]:
     """Outbound GET respecting scope.opsec. Returns (status, body, headers).
 
     On error returns (0, error-bytes, {}).
@@ -50,7 +57,9 @@ def http_get(url: str, scope_path: str = "scope/scope.yaml", stable: bool = Fals
         headers["Referer"] = ""
 
     if proxy:
-        opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": proxy, "https": proxy}))
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({"http": proxy, "https": proxy})
+        )
     else:
         opener = urllib.request.build_opener()
 

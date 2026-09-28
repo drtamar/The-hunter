@@ -3,13 +3,15 @@
 Used by evidence-officer subagent and the evidence-capture hook.
 stdlib-only; chromium headless screenshot is best-effort.
 """
+
 from __future__ import annotations
-import urllib.parse
-import urllib.request
+
 import hashlib
 import pathlib
-import subprocess
 import shutil
+import subprocess
+import urllib.parse
+import urllib.request
 
 from . import evidence_log
 
@@ -71,10 +73,18 @@ def _screenshot(url: str, out_path: pathlib.Path) -> bool:
             continue
         try:
             subprocess.run(
-                [binary, "--headless", "--disable-gpu",
-                 f"--screenshot={out_path}", "--window-size=1280,1800", url],
-                check=True, timeout=45,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                [
+                    binary,
+                    "--headless",
+                    "--disable-gpu",
+                    f"--screenshot={out_path}",
+                    "--window-size=1280,1800",
+                    url,
+                ],
+                check=True,
+                timeout=45,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
             if out_path.exists() and out_path.stat().st_size > 0:
                 return True

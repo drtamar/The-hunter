@@ -6,8 +6,8 @@ This example demonstrates how to use the OSINT engine with
 multiple modules and AI analysis capabilities.
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -36,7 +36,9 @@ def main():
     print()
 
     # Target domain
-    target = input("Enter domain to analyze (or press Enter for 'example.com'): ").strip()
+    target = input(
+        "Enter domain to analyze (or press Enter for 'example.com'): "
+    ).strip()
     if not target:
         target = "example.com"
 
@@ -73,7 +75,9 @@ def main():
         print()
         print("-" * 60)
         print(f"Compliance Score: {result.compliance_score}%")
-        print(f"Legal Compliance: {'✅ PASSED' if result.legal_compliance else '❌ FAILED'}")
+        print(
+            f"Legal Compliance: {'✅ PASSED' if result.legal_compliance else '❌ FAILED'}"
+        )
         print(f"Sources Used: {len(result.sources)}")
         print()
 

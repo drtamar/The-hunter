@@ -5,8 +5,8 @@ Claude AI Analysis Example
 Demonstrates how to use Claude for OSINT analysis.
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -57,9 +57,7 @@ def main():
     Format as a professional intelligence brief.
     """
 
-    result = analyzer.analyze_osint_data(
-        data=osint_data, prompt=analysis_prompt
-    )
+    result = analyzer.analyze_osint_data(data=osint_data, prompt=analysis_prompt)
 
     if result["success"]:
         print("\n📊 Claude Analysis:")

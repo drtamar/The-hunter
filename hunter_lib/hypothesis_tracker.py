@@ -3,10 +3,12 @@
 Pattern from drtamar/intellyweave. Append-only JSONL per case;
 later rows for the same hypothesis_id override earlier ones (read latest).
 """
+
 from __future__ import annotations
+
+import datetime
 import json
 import pathlib
-import datetime
 from collections import defaultdict
 
 CASES_ROOT = pathlib.Path("case")

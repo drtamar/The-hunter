@@ -5,16 +5,15 @@ Performs DNS queries to gather domain intelligence.
 All queries use public DNS resolvers and comply with DNS standards.
 """
 
-import socket
-from typing import Dict, Any, List
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Dict
 
 try:
     import dns.resolver
     import dns.reversename
 except ImportError:
-    dns = None
+    dns = None  # type: ignore[assignment]
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +59,7 @@ class DNSModule:
         Returns:
             DNS records for domain
         """
-        results = {
+        results: Dict[str, Any] = {
             "domain": domain,
             "records": {},
             "legal": True,
@@ -74,9 +73,7 @@ class DNSModule:
         for rtype in record_types:
             try:
                 answers = self.resolver.resolve(domain, rtype)
-                results["records"][rtype] = [
-                    str(rdata) for rdata in answers
-                ]
+                results["records"][rtype] = [str(rdata) for rdata in answers]
             except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
                 results["records"][rtype] = []
             except Exception as e:

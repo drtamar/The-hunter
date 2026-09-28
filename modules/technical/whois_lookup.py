@@ -13,11 +13,11 @@ Data Sources:
 - Respects rate limiting requirements
 """
 
-import socket
-import re
-from typing import Dict, Any, Optional
-from datetime import datetime
 import logging
+import re
+import socket
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -84,15 +84,14 @@ class WHOISModule:
             ConnectionError: If WHOIS server is unreachable
         """
         # Validate domain
-        domain = self._validate_domain(domain)
-        if not domain:
+        validated = self._validate_domain(domain)
+        if not validated:
             raise ValueError(f"Invalid domain: {domain}")
+        domain = validated
 
         # Get appropriate WHOIS server
         tld = domain.split(".")[-1]
-        whois_server = self.whois_servers.get(
-            tld, "whois.iana.org"
-        )
+        whois_server = self.whois_servers.get(tld, "whois.iana.org")
 
         try:
             # Query WHOIS server
@@ -114,9 +113,7 @@ class WHOISModule:
 
         except Exception as e:
             logger.error(f"WHOIS lookup failed for {domain}: {e}")
-            raise ConnectionError(
-                f"Failed to query WHOIS server: {e}"
-            )
+            raise ConnectionError(f"Failed to query WHOIS server: {e}")
 
     def _validate_domain(self, domain: str) -> Optional[str]:
         """Validate domain name format.
@@ -142,9 +139,7 @@ class WHOISModule:
 
         return None
 
-    def _query_whois_server(
-        self, domain: str, server: str, port: int = 43
-    ) -> str:
+    def _query_whois_server(self, domain: str, server: str, port: int = 43) -> str:
         """Query WHOIS server for domain information.
 
         Args:
@@ -192,7 +187,7 @@ class WHOISModule:
         Returns:
             Parsed WHOIS data
         """
-        data = {
+        data: Dict[str, Any] = {
             "registrar": None,
             "creation_date": None,
             "expiration_date": None,
@@ -203,16 +198,12 @@ class WHOISModule:
         }
 
         # Parse registrar
-        registrar_match = re.search(
-            r"Registrar:\s*(.+)", raw_data, re.IGNORECASE
-        )
+        registrar_match = re.search(r"Registrar:\s*(.+)", raw_data, re.IGNORECASE)
         if registrar_match:
             data["registrar"] = registrar_match.group(1).strip()
 
         # Parse dates
-        creation_match = re.search(
-            r"Creation Date:\s*(.+)", raw_data, re.IGNORECASE
-        )
+        creation_match = re.search(r"Creation Date:\s*(.+)", raw_data, re.IGNORECASE)
         if creation_match:
             data["creation_date"] = creation_match.group(1).strip()
 
@@ -222,20 +213,14 @@ class WHOISModule:
         if expiration_match:
             data["expiration_date"] = expiration_match.group(1).strip()
 
-        updated_match = re.search(
-            r"Updated Date:\s*(.+)", raw_data, re.IGNORECASE
-        )
+        updated_match = re.search(r"Updated Date:\s*(.+)", raw_data, re.IGNORECASE)
         if updated_match:
             data["updated_date"] = updated_match.group(1).strip()
 
         # Parse name servers
-        ns_matches = re.findall(
-            r"Name Server:\s*(.+)", raw_data, re.IGNORECASE
-        )
+        ns_matches = re.findall(r"Name Server:\s*(.+)", raw_data, re.IGNORECASE)
         if ns_matches:
-            data["name_servers"] = [
-                ns.strip().lower() for ns in ns_matches
-            ]
+            data["name_servers"] = [ns.strip().lower() for ns in ns_matches]
 
         # Parse status
         status_matches = re.findall(

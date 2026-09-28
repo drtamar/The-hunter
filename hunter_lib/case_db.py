@@ -5,12 +5,14 @@ Opens a CASE-YYYY-NNNN per investigation, creates the on-disk workspace,
 and maintains a SQLite index for fast lookup. JSONL files remain the
 source of truth for evidence and findings; SQLite is just an index.
 """
+
 from __future__ import annotations
-import sqlite3
-import json
-import hashlib
+
 import datetime
+import hashlib
+import json
 import pathlib
+import sqlite3
 
 DB_PATH = pathlib.Path("case/cases.db")
 CASES_ROOT = pathlib.Path("case")
@@ -70,7 +72,13 @@ def open_case(target: str, scope_path: str = "scope/scope.yaml") -> str:
     case_dir = CASES_ROOT / case_id
     (case_dir / "raw").mkdir(parents=True, exist_ok=True)
     (case_dir / "reports").mkdir(parents=True, exist_ok=True)
-    for jf in ("evidence.jsonl", "findings.jsonl", "alerts.jsonl", "audit.jsonl", "hypotheses.jsonl"):
+    for jf in (
+        "evidence.jsonl",
+        "findings.jsonl",
+        "alerts.jsonl",
+        "audit.jsonl",
+        "hypotheses.jsonl",
+    ):
         (case_dir / jf).touch()
     c = _conn()
     c.execute(
@@ -92,10 +100,14 @@ def list_cases(status: str | None = None) -> list[tuple]:
 
 
 def get_case(case_id: str) -> dict | None:
-    row = _conn().execute(
-        "SELECT case_id, target, opened_at, scope_hash, status, meta FROM cases WHERE case_id = ?",
-        (case_id,),
-    ).fetchone()
+    row = (
+        _conn()
+        .execute(
+            "SELECT case_id, target, opened_at, scope_hash, status, meta FROM cases WHERE case_id = ?",
+            (case_id,),
+        )
+        .fetchone()
+    )
     if not row:
         return None
     keys = ["case_id", "target", "opened_at", "scope_hash", "status", "meta"]
@@ -123,7 +135,12 @@ def add_finding(
     collected_by: str,
     notes: str = "",
 ) -> str:
-    fid = "F-" + hashlib.sha256(f"{case_id}|{kind}|{value}|{collected_by}".encode()).hexdigest()[:10]
+    fid = (
+        "F-"
+        + hashlib.sha256(
+            f"{case_id}|{kind}|{value}|{collected_by}".encode()
+        ).hexdigest()[:10]
+    )
     now = datetime.datetime.utcnow().isoformat() + "Z"
     ev = ev_ids if isinstance(ev_ids, list) else [ev_ids]
     row = {
@@ -143,7 +160,18 @@ def add_finding(
     c = _conn()
     c.execute(
         "INSERT OR REPLACE INTO findings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (fid, case_id, kind, value, status, source_grade, json.dumps(ev), collected_by, now, notes),
+        (
+            fid,
+            case_id,
+            kind,
+            value,
+            status,
+            source_grade,
+            json.dumps(ev),
+            collected_by,
+            now,
+            notes,
+        ),
     )
     c.commit()
     return fid
@@ -156,7 +184,17 @@ def list_findings(case_id: str, kind: str | None = None) -> list[dict]:
         q += " AND kind = ?"
         args = (case_id, kind)
     rows = _conn().execute(q, args).fetchall()
-    keys = ["finding_id", "kind", "value", "status", "source_grade", "ev_ids", "collected_by", "collected_at", "notes"]
+    keys = [
+        "finding_id",
+        "kind",
+        "value",
+        "status",
+        "source_grade",
+        "ev_ids",
+        "collected_by",
+        "collected_at",
+        "notes",
+    ]
     out = []
     for r in rows:
         d = dict(zip(keys, r))

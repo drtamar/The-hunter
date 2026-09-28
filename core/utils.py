@@ -5,13 +5,13 @@ This module provides utility classes for logging, rate limiting,
 caching, and other common operations.
 """
 
-import logging
-import time
-from typing import Dict, Optional, Any
-from datetime import datetime, timedelta
-from collections import defaultdict
 import hashlib
 import json
+import logging
+import time
+from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
 
 
 class Logger:
@@ -173,8 +173,7 @@ class RateLimiter:
         return {
             "per_minute": self.requests_per_minute
             - len(self.minute_buckets[identifier]),
-            "per_hour": self.requests_per_hour
-            - len(self.hour_buckets[identifier]),
+            "per_hour": self.requests_per_hour - len(self.hour_buckets[identifier]),
         }
 
 
@@ -213,9 +212,7 @@ class Cache:
 
         return entry["value"]
 
-    def set(
-        self, key: str, value: Any, ttl: Optional[int] = None
-    ) -> None:
+    def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
         """Set value in cache.
 
         Args:
@@ -245,9 +242,7 @@ class Cache:
         """Remove expired entries from cache."""
         now = datetime.now()
         expired_keys = [
-            key
-            for key, entry in self.cache.items()
-            if now > entry["expires"]
+            key for key, entry in self.cache.items() if now > entry["expires"]
         ]
 
         for key in expired_keys:
@@ -269,9 +264,9 @@ class Hasher:
             Hexadecimal hash string
         """
         if algorithm == "md5":
-            return hashlib.md5(data.encode()).hexdigest()
+            return hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()
         elif algorithm == "sha1":
-            return hashlib.sha1(data.encode()).hexdigest()
+            return hashlib.sha1(data.encode(), usedforsecurity=False).hexdigest()
         else:  # sha256
             return hashlib.sha256(data.encode()).hexdigest()
 
@@ -355,11 +350,7 @@ class DataFormatter:
 
         # Data rows
         for row in data:
-            table += (
-                "| "
-                + " | ".join(str(row.get(h, "")) for h in headers)
-                + " |\n"
-            )
+            table += "| " + " | ".join(str(row.get(h, "")) for h in headers) + " |\n"
 
         return table
 

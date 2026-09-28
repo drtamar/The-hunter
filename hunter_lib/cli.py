@@ -10,15 +10,14 @@ Usage:
   python -m hunter_lib.cli monitor alerts --days 7
   python -m hunter_lib.cli archive url --case CASE-... --url https://example.com
 """
+
 from __future__ import annotations
+
 import argparse
 import json
 import sys
 
-from . import case_db
-from . import evidence_log
-from . import watchlist
-from . import archiver
+from . import archiver, case_db, evidence_log, watchlist
 
 
 def cmd_case(args: argparse.Namespace) -> None:
@@ -51,7 +50,12 @@ def cmd_monitor(args: argparse.Namespace) -> None:
         if not (args.case_id and args.kind and args.value):
             print("--case / --kind / --value all required", file=sys.stderr)
             sys.exit(2)
-        wid = watchlist.add(case_id=args.case_id, kind=args.kind, value=args.value, poll_interval_min=args.interval)
+        wid = watchlist.add(
+            case_id=args.case_id,
+            kind=args.kind,
+            value=args.value,
+            poll_interval_min=args.interval,
+        )
         print(wid)
     elif args.op == "list":
         for row in watchlist.list_active():
@@ -68,7 +72,9 @@ def cmd_monitor(args: argparse.Namespace) -> None:
 
 
 def cmd_archive(args: argparse.Namespace) -> None:
-    row = archiver.auto_capture(case_id=args.case_id, url=args.url, collected_by="cli", source_grade="A")
+    row = archiver.auto_capture(
+        case_id=args.case_id, url=args.url, collected_by="cli", source_grade="A"
+    )
     print(json.dumps(row, indent=2))
 
 
@@ -102,7 +108,12 @@ def main(argv: list[str] | None = None) -> None:
     pa.add_argument("--url", required=True)
 
     args = p.parse_args(argv)
-    dispatch = {"case": cmd_case, "evidence": cmd_evidence, "monitor": cmd_monitor, "archive": cmd_archive}
+    dispatch = {
+        "case": cmd_case,
+        "evidence": cmd_evidence,
+        "monitor": cmd_monitor,
+        "archive": cmd_archive,
+    }
     dispatch[args.sub](args)
 
 

@@ -5,13 +5,13 @@ This module contains the main OSINT engine that orchestrates
 data collection, validation, and analysis across all modules.
 """
 
-from typing import Dict, List, Optional, Any
+import json
 import logging
 from datetime import datetime
-import json
+from typing import Any, Dict, List, Optional
 
-from .validators import SourceValidator, InputValidator
 from .utils import Logger, RateLimiter
+from .validators import InputValidator, SourceValidator
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ class OSINTEngine:
         self.validator = SourceValidator()
         self.input_validator = InputValidator()
         self.rate_limiter = RateLimiter()
-        self.modules = {}
+        self.modules: Dict[str, Any] = {}
         self.logger = Logger(__name__)
 
         self.logger.info("OSINT Engine initialized")
@@ -164,9 +164,7 @@ class OSINTEngine:
                 # Validate legal compliance
                 if not module_result.get("legal", False):
                     all_legal = False
-                    self.logger.warning(
-                        f"Module {module_name} returned non-legal data"
-                    )
+                    self.logger.warning(f"Module {module_name} returned non-legal data")
                     continue
 
                 results[module_name] = module_result
@@ -178,9 +176,7 @@ class OSINTEngine:
 
         # Perform AI analysis if requested
         if ai_analysis and results:
-            ai_summary = self._perform_ai_analysis(
-                results, ai_provider
-            )
+            ai_summary = self._perform_ai_analysis(results, ai_provider)
             results["ai_analysis"] = ai_summary
 
         # Create and return result
@@ -195,9 +191,7 @@ class OSINTEngine:
             },
         )
 
-    def _perform_ai_analysis(
-        self, data: Dict, provider: str
-    ) -> Dict[str, Any]:
+    def _perform_ai_analysis(self, data: Dict, provider: str) -> Dict[str, Any]:
         """Perform AI analysis on collected data.
 
         Args:

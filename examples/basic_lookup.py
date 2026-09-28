@@ -6,14 +6,14 @@ This example demonstrates how to perform a basic WHOIS lookup
 using the AI-OSINT-Framework.
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path to import modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from modules.technical.whois_lookup import WHOISModule
 from core.utils import DataFormatter
+from modules.technical.whois_lookup import WHOISModule
 
 
 def main():

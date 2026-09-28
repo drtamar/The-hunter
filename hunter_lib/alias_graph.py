@@ -4,10 +4,12 @@ Pattern from drtamar/newsroom-extension (structural-dependency-mapping).
 Nodes are typed (email, domain, ip, wallet, handle, etc.); edges have
 confidence in [0..1] and a reason string.
 """
+
 from __future__ import annotations
+
+import hashlib
 import json
 import pathlib
-import hashlib
 import re
 
 CASES_ROOT = pathlib.Path("case")
@@ -42,7 +44,13 @@ def save(case_id: str, graph: dict) -> None:
     p.write_text(json.dumps(graph, indent=2))
 
 
-def add_node(case_id: str, kind: str, value: str, ev_ids: list[str] | None = None, attrs: dict | None = None) -> str:
+def add_node(
+    case_id: str,
+    kind: str,
+    value: str,
+    ev_ids: list[str] | None = None,
+    attrs: dict | None = None,
+) -> str:
     g = load(case_id)
     nid = _node_id(kind, value)
     if nid not in g["nodes"]:
@@ -71,14 +79,16 @@ def add_edge(
     src = _node_id(src_kind, src_value)
     dst = _node_id(dst_kind, dst_value)
     eid = hashlib.sha256(f"{src}|{dst}|{reason}".encode()).hexdigest()[:12]
-    g["edges"].append({
-        "id": eid,
-        "src": src,
-        "dst": dst,
-        "confidence": float(confidence),
-        "reason": reason,
-        "ev_ids": ev_ids or [],
-    })
+    g["edges"].append(
+        {
+            "id": eid,
+            "src": src,
+            "dst": dst,
+            "confidence": float(confidence),
+            "reason": reason,
+            "ev_ids": ev_ids or [],
+        }
+    )
     save(case_id, g)
     return eid
 
@@ -89,5 +99,7 @@ def to_mermaid(case_id: str) -> str:
     for nid, n in g["nodes"].items():
         lines.append(f'  {_safe(nid)}["{n["kind"]}:{n["value"]}"]')
     for e in g["edges"]:
-        lines.append(f'  {_safe(e["src"])} ---|{e["confidence"]:.2f}| {_safe(e["dst"])}')
+        lines.append(
+            f'  {_safe(e["src"])} ---|{e["confidence"]:.2f}| {_safe(e["dst"])}'
+        )
     return "\n".join(lines)

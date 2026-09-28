@@ -3,11 +3,13 @@
 Protocol from drtamar/huntkit (EV-IDs + capture-evidence) fused with
 drtamar/UAP_OSINT-v0.1 (Superseded / Contradicted markers).
 """
+
 from __future__ import annotations
-import json
-import pathlib
+
 import datetime
 import hashlib
+import json
+import pathlib
 import re
 
 CASES_ROOT = pathlib.Path("case")
@@ -82,7 +84,9 @@ def seal(
     return row
 
 
-def supersede(case_id: str, new_ev_id: str, old_ev_id: str, reason: str, **seal_kwargs) -> dict:
+def supersede(
+    case_id: str, new_ev_id: str, old_ev_id: str, reason: str, **seal_kwargs
+) -> dict:
     """Mark new_ev_id as superseding old_ev_id; appends both rows."""
     row = seal(case_id, new_ev_id, **seal_kwargs)
     note = {
@@ -96,7 +100,9 @@ def supersede(case_id: str, new_ev_id: str, old_ev_id: str, reason: str, **seal_
     return row
 
 
-def contradict(case_id: str, new_ev_id: str, contradicts_ids, reason: str, **seal_kwargs) -> dict:
+def contradict(
+    case_id: str, new_ev_id: str, contradicts_ids, reason: str, **seal_kwargs
+) -> dict:
     """Mark new_ev_id as contradicting one or more EV-IDs."""
     row = seal(case_id, new_ev_id, **seal_kwargs)
     ids = contradicts_ids if isinstance(contradicts_ids, list) else [contradicts_ids]
@@ -133,7 +139,13 @@ def verify(case_id: str) -> dict:
 
     Returns a drift report; any mismatch is a chain-of-custody breach.
     """
-    report = {"case_id": case_id, "checked": 0, "matched": 0, "mismatched": [], "missing": []}
+    report = {
+        "case_id": case_id,
+        "checked": 0,
+        "matched": 0,
+        "mismatched": [],
+        "missing": [],
+    }
     case_dir = CASES_ROOT / case_id
     for row in read_all(case_id):
         if row.get("status") != "sealed":
@@ -158,6 +170,11 @@ def verify(case_id: str) -> dict:
                 report["matched"] += 1
             else:
                 report["mismatched"].append(
-                    {"ev_id": ev_id, "file": str(fp), "expected": expected, "actual": actual}
+                    {
+                        "ev_id": ev_id,
+                        "file": str(fp),
+                        "expected": expected,
+                        "actual": actual,
+                    }
                 )
     return report

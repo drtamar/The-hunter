@@ -19,7 +19,6 @@ pylint>=3.0.0
 
 # Security scanning
 bandit>=1.7.6
-safety>=3.0.0
 pip-audit>=2.7.0
 
 # Documentation

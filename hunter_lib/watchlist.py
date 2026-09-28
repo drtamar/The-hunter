@@ -3,12 +3,14 @@
 Pattern from drtamar/strike-monitor: tiered source weights, dedup-by-signal-hash,
 append-only alerts. Backed by SQLite.
 """
+
 from __future__ import annotations
-import sqlite3
-import json
-import pathlib
+
 import datetime
 import hashlib
+import json
+import pathlib
+import sqlite3
 
 DB = pathlib.Path("case/watchlist.db")
 
@@ -68,8 +70,14 @@ def add(
         "(watch_id, case_id, kind, value, poll_interval_min, source_tier, alert_on, added_at, last_polled_at, last_signal_hash, active) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 1)",
         (
-            wid, case_id, kind, value, poll_interval_min, source_tier,
-            json.dumps(alert_on or ["appeared", "changed"]), _now(),
+            wid,
+            case_id,
+            kind,
+            value,
+            poll_interval_min,
+            source_tier,
+            json.dumps(alert_on or ["appeared", "changed"]),
+            _now(),
         ),
     )
     c.commit()
@@ -77,10 +85,14 @@ def add(
 
 
 def list_active() -> list[tuple]:
-    return _c().execute(
-        "SELECT watch_id, case_id, kind, value, poll_interval_min, source_tier, last_polled_at "
-        "FROM watches WHERE active = 1 ORDER BY added_at DESC"
-    ).fetchall()
+    return (
+        _c()
+        .execute(
+            "SELECT watch_id, case_id, kind, value, poll_interval_min, source_tier, last_polled_at "
+            "FROM watches WHERE active = 1 ORDER BY added_at DESC"
+        )
+        .fetchall()
+    )
 
 
 def remove(watch_id: str) -> None:
@@ -128,8 +140,14 @@ def record_signal(
 
 
 def recent_alerts(days: int = 7) -> list[tuple]:
-    cutoff = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).isoformat() + "Z"
-    return _c().execute(
-        "SELECT watch_id, event, confidence, ev_id, signal, at FROM alerts WHERE at >= ? ORDER BY at DESC",
-        (cutoff,),
-    ).fetchall()
+    cutoff = (
+        datetime.datetime.utcnow() - datetime.timedelta(days=days)
+    ).isoformat() + "Z"
+    return (
+        _c()
+        .execute(
+            "SELECT watch_id, event, confidence, ev_id, signal, at FROM alerts WHERE at >= ? ORDER BY at DESC",
+            (cutoff,),
+        )
+        .fetchall()
+    )

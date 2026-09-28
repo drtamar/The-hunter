@@ -2,8 +2,9 @@
 Setup configuration for AI-OSINT-Framework
 """
 
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages, setup
 
 
 def read_file(filename):
@@ -48,14 +49,13 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
         "Natural Language :: English",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     install_requires=read_requirements("requirements.txt"),
     extras_require={
         "dev": read_requirements("requirements-dev.txt"),
